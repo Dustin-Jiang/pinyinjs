@@ -74,59 +74,65 @@ var SimpleInputMethod =
 	 */
 	init: function(selector)
 	{
+		this.isInput = true;
 		this.initDict();
 		this.initDom();
-		obj = document.querySelectorAll(selector);
+		this.obj = document.querySelectorAll(selector);
+		obj = this.obj
 		this._target = document.querySelector('#simle_input_method');
 		this._pinyinTarget = document.querySelector('#simle_input_method .pinyin');
 		this._resultTarget = document.querySelector('#simle_input_method .result ol');
 		var that = this;
 		for(var i=0; i<obj.length; i++)
 		{
-			obj[i].addEventListener('keydown', function(e)
-			{
-				var keyCode = e.keyCode;
-				var preventDefault = false;
-				if(keyCode >= 65 && keyCode <= 90) // A-Z
-				{
-					that.addChar(String.fromCharCode(keyCode+32), this);
-					preventDefault = true;
-				}
-				else if(keyCode == 8 && that.pinyin) // 删除键
-				{
-					that.delChar();
-					preventDefault = true;
-				}
-				else if(keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) // 1-9
-				{
-					that.selectHanzi(keyCode-48);
-					preventDefault = true;
-				}
-				else if(keyCode == 32 && that.pinyin) // 空格
-				{
-					that.selectHanzi(1);
-					preventDefault = true;
-				}
-				else if(keyCode == 33 && that.pageCount > 0 && that.pageCurrent > 1) // 上翻页
-				{
-					that.pageCurrent--;
-					that.refreshPage();
-					preventDefault = true;
-				}
-				else if(keyCode == 34 && that.pageCount > 0 && that.pageCurrent < that.pageCount) // 下翻页
-				{
-					that.pageCurrent++;
-					that.refreshPage();
-					preventDefault = true;
-				}
-				if(preventDefault) e.preventDefault();
-			});
+			obj[i].addEventListener('keydown', this._handleKeyDown)
 			obj[i].addEventListener('focus', function()
 			{
 				// 如果选中的不是当前文本框，隐藏输入法
 				if(that._input !== this) that.hide();
 			});
 		}
+	},
+	/**
+	 * 处理案件事件
+	 * @param e event 
+	 */
+	_handleKeyDown: function(e) {
+		var keyCode = e.keyCode;
+		var preventDefault = false;
+		if (keyCode >= 65 && keyCode <= 90) // A-Z
+		{
+			that.addChar(String.fromCharCode(keyCode + 32), this);
+			preventDefault = true;
+		}
+		else if (keyCode == 8 && that.pinyin) // 删除键
+		{
+			that.delChar();
+			preventDefault = true;
+		}
+		else if (keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) // 1-9
+		{
+			that.selectHanzi(keyCode - 48);
+			preventDefault = true;
+		}
+		else if (keyCode == 32 && that.pinyin) // 空格
+		{
+			that.selectHanzi(1);
+			preventDefault = true;
+		}
+		else if ((keyCode == 33 || keyCode == 173) && that.pageCount > 0 && that.pageCurrent > 1) // 上翻页
+		{
+			that.pageCurrent--;
+			that.refreshPage();
+			preventDefault = true;
+		}
+		else if ((keyCode == 34 || keyCode == 61) && that.pageCount > 0 && that.pageCurrent < that.pageCount) // 下翻页
+		{
+			that.pageCurrent++;
+			that.refreshPage();
+			preventDefault = true;
+		}
+		if (preventDefault) e.preventDefault();
 	},
 	/**
 	 * 单个拼音转单个汉字，例如输入 "a" 返回 "阿啊呵腌嗄吖锕"
@@ -230,6 +236,9 @@ var SimpleInputMethod =
 			this.hide();
 			return;
 		}
+		if(this._target.style.display == "none") {
+			this.obj.value = this.obj.value.substring(0, this.obj.value.length - 1)
+		}
 		this.pinyin = this.pinyin.substr(0, this.pinyin.length-1);
 		this.refresh();
 	},
@@ -254,5 +263,22 @@ var SimpleInputMethod =
 		this.pageCurrent = 1;
 		this.pageCount = 0;
 		this._pinyinTarget.innerHTML = '';
+	},
+	switchInput: function() {
+		this.isInput = !this.isInput;
+		if (this.isInput) {
+			for (i in this.obj) {
+				this.obj[i].addEventListener('keydown', this._handleKeyDown);
+				this.obj[i].addEventListener('focus', function () {
+					// 如果选中的不是当前文本框，隐藏输入法
+					if (that._input !== this) that.hide();
+				});
+			}
+		} else {
+			this.obj[i].removeEventListener('keydown', this._handleKeyDown);
+			this.obj[i].removeEventListener('focus', function () {
+				if (that._input !== this) that.hide();
+			});
+		}
 	}
 };
