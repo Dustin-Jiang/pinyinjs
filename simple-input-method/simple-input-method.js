@@ -102,34 +102,34 @@ var SimpleInputMethod =
 		var preventDefault = false;
 		if (keyCode >= 65 && keyCode <= 90) // A-Z
 		{
-			that.addChar(String.fromCharCode(keyCode + 32), this);
+			this.addChar(String.fromCharCode(keyCode + 32), this);
 			preventDefault = true;
 		}
-		else if (keyCode == 8 && that.pinyin) // 删除键
+		else if (keyCode == 8 && this.pinyin) // 删除键
 		{
-			that.delChar();
+			this.delChar();
 			preventDefault = true;
 		}
-		else if (keyCode >= 48 && keyCode <= 57 && !e.shiftKey && that.pinyin) // 1-9
+		else if (keyCode >= 48 && keyCode <= 57 && !e.shiftKey && this.pinyin) // 1-9
 		{
-			that.selectHanzi(keyCode - 48);
+			this.selectHanzi(keyCode - 48);
 			preventDefault = true;
 		}
-		else if (keyCode == 32 && that.pinyin) // 空格
+		else if (keyCode == 32 && this.pinyin) // 空格
 		{
-			that.selectHanzi(1);
+			this.selectHanzi(1);
 			preventDefault = true;
 		}
-		else if ((keyCode == 33 || keyCode == 173) && that.pageCount > 0 && that.pageCurrent > 1) // 上翻页
+		else if ((keyCode == 33 || keyCode == 173) && this.pageCount > 0 && this.pageCurrent > 1) // 上翻页
 		{
-			that.pageCurrent--;
-			that.refreshPage();
+			this.pageCurrent--;
+			this.refreshPage();
 			preventDefault = true;
 		}
-		else if ((keyCode == 34 || keyCode == 61) && that.pageCount > 0 && that.pageCurrent < that.pageCount) // 下翻页
+		else if ((keyCode == 34 || keyCode == 61) && this.pageCount > 0 && this.pageCurrent < this.pageCount) // 下翻页
 		{
-			that.pageCurrent++;
-			that.refreshPage();
+			this.pageCurrent++;
+			this.refreshPage();
 			preventDefault = true;
 		}
 		if (preventDefault) e.preventDefault();
@@ -271,13 +271,13 @@ var SimpleInputMethod =
 				this.obj[i].addEventListener('keydown', this._handleKeyDown);
 				this.obj[i].addEventListener('focus', function () {
 					// 如果选中的不是当前文本框，隐藏输入法
-					if (that._input !== this) that.hide();
+					if (this._input !== this) this.hide();
 				});
 			}
 		} else {
 			this.obj[i].removeEventListener('keydown', this._handleKeyDown);
 			this.obj[i].removeEventListener('focus', function () {
-				if (that._input !== this) that.hide();
+				if (this._input !== this) this.hide();
 			});
 		}
 	}
